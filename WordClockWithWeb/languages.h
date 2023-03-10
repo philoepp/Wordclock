@@ -28,7 +28,7 @@
 // # Default texts in german language:
 // ###########################################################################################################################################
 // General texts:
-String WordClockName, languageSelect, languageInt0, languageInt1, txtSaveSettings;
+String WordClockName, languageSelect, languageInt0, languageInt1, languageInt2, txtSaveSettings;
 // LED settings:
 String txtSettings, txtLEDsettings, txtLEDcolor, txtIntensityDay, txtIntensityNight, txtPowerSupplyNote1, txtPowerSupplyNote2, txtPowerSupplyNote3, txtPowerSupplyNote4;
 String txtFlashFullHour1, txtFlashFullHour2, txtShowDate1, txtShowDate2, txtNightMode1, txtNightMode2, txtNightMode3, txtNightModeOff, txtNightModeTo, txtNightModeClock;
@@ -57,12 +57,13 @@ void setLanguage(int lang) {
   // ###########################################################################################################################################
   // # Translations for: DE
   // ###########################################################################################################################################
-  if (lang == 0) {  // DEUTSCH
+  if ((lang == 0)||(lang == 2)) {  // DEUTSCH
     // Allgemeine Texte:
     WordClockName = "WordClock";
     languageSelect = "Sprache für das WordClock Layout und die Web Konfiguration";
     languageInt0 = "Deutsch";
     languageInt1 = "Englisch";
+    languageInt2 = "Deutsch (anderes Layout)";
     txtSaveSettings = "Einstellungen speichern";
     DEspecial1Text1 = "Schreibweise für x:15 und x:45";
     DEspecial1Text2 = "VIERTEL VOR / VIERTEL NACH";
@@ -176,6 +177,7 @@ void setLanguage(int lang) {
     languageSelect = "Language for the WordClock layout and web configuration";
     languageInt0 = "German";
     languageInt1 = "English";
+    languageInt2 = "German (different layout)";
     txtSaveSettings = "Save settings";
 
     // LED settings:
