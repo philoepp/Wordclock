@@ -56,6 +56,13 @@
 // ###########################################################################################################################################
 const char* WORD_CLOCK_VERSION = "V5.9.2";
 
+typedef enum
+{
+    GERMAN, 			// 0
+    ENGLISH, 			// 1
+    GERMAN_OLD_LAYOUT, 	// 2
+    MAX_LANGUAGE_COUNT
+} LANGUAGES;
 
 // ###########################################################################################################################################
 // # Declartions and variables used in the functions:
@@ -812,7 +819,7 @@ void checkClient() {
 
             // DE special parameter VIERTEL VOR vs. DREIVIERTEL selection:
             // ###########################################################
-            if ((switchLangWeb == 0)||(switchLangWeb == 2)) {
+            if ((switchLangWeb == GERMAN)||(switchLangWeb == GERMAN_OLD_LAYOUT)) {
               client.println("<br><label for=\"DEspecial1\"><h2>" + DEspecial1Text1 + ":</h2></label>");
               client.println("<fieldset>");
               client.println("<div>");
@@ -1728,7 +1735,8 @@ void dunkel() {
 // ###########################################################################################################################################
 void defaultText() {
   switch (switchLangWeb) {
-    case 0:  // DE
+    case GERMAN:  // DE
+	case GERMAN_OLD_LAYOUT:
       {
         pixels.setPixelColor(5, pixels.Color(redVal, greenVal, blueVal));   // set on default text
         pixels.setPixelColor(6, pixels.Color(redVal, greenVal, blueVal));   // set on default text
@@ -1737,7 +1745,7 @@ void defaultText() {
         pixels.setPixelColor(10, pixels.Color(redVal, greenVal, blueVal));  // set on default text
         break;
       }
-    case 1:  // EN
+    case ENGLISH:  // EN
       {
         // pixels.setPixelColor(5, pixels.Color(redVal, greenVal, blueVal));   // set on default text
         pixels.setPixelColor(6, pixels.Color(redVal, greenVal, blueVal));   // set on default text
@@ -1746,16 +1754,6 @@ void defaultText() {
         pixels.setPixelColor(10, pixels.Color(redVal, greenVal, blueVal));  // set on default text
         break;
       }
-    case 2:  // DE altes format
-      {
-        pixels.setPixelColor(5, pixels.Color(redVal, greenVal, blueVal));   // set on default text
-        pixels.setPixelColor(6, pixels.Color(redVal, greenVal, blueVal));   // set on default text
-        pixels.setPixelColor(7, pixels.Color(redVal, greenVal, blueVal));   // set on default text
-        pixels.setPixelColor(9, pixels.Color(redVal, greenVal, blueVal));   // set on default text
-        pixels.setPixelColor(10, pixels.Color(redVal, greenVal, blueVal));  // set on default text
-        break;
-      }
-
     default:  // DE
       {
         pixels.setPixelColor(5, pixels.Color(redVal, greenVal, blueVal));   // set on default text
@@ -1969,7 +1967,7 @@ void showCurrentTime() {
   int minDiv = iMinute / 5;
 
   switch (switchLangWeb) {
-    case 0:  // DE
+    case GERMAN:  // DE
       {
         // Fuenf: (Minuten)
         setLED(0, 3, ((minDiv == 1) || (minDiv == 5) || (minDiv == 7) || (minDiv == 11)));
@@ -2039,7 +2037,7 @@ void showCurrentTime() {
         setLEDHour(88, 92, (xHour == 12));
         break;
       }
-    case 1:  // EN
+    case ENGLISH:  // EN
       {
         // FIVE: (Minutes)            // x:05 + x:25 + x:35 + x:55
         setLED(23, 26, ((minDiv == 1) || (minDiv == 5) || (minDiv == 7) || (minDiv == 11)));
@@ -2101,7 +2099,7 @@ void showCurrentTime() {
         setLEDHour(88, 93, (xHour == 12));
         break;
       }
-    case 2:  // DE - altes Format TODO
+    case GERMAN_OLD_LAYOUT:
       {
         // Fuenf: (Minuten)
         setLED(0, 3, ((minDiv == 1) || (minDiv == 5) || (minDiv == 7) || (minDiv == 11)));
@@ -2115,14 +2113,14 @@ void showCurrentTime() {
         // Zwanzig:
         setLED(15, 21, ((minDiv == 4) || (minDiv == 8)));
         // Nach:
-        if (DEspecial1 == 0) setLED(40, 43, ((minDiv == 1) || (minDiv == 2) || (minDiv == 3) || (minDiv == 4) || (minDiv == 7)));
+        if (DEspecial1 == 0) setLED(35, 38, ((minDiv == 1) || (minDiv == 2) || (minDiv == 3) || (minDiv == 4) || (minDiv == 7)));
         if (DEspecial1 == 1) {
-          setLED(40, 43, ((minDiv == 1) || (minDiv == 2) || (minDiv == 4) || (minDiv == 7)));
+          setLED(35, 38, ((minDiv == 1) || (minDiv == 2) || (minDiv == 4) || (minDiv == 7)));
           if (minDiv == 3) iHour = iHour + 1;
         }
         // Vor:
-        if (DEspecial1 == 0) setLED(33, 35, ((minDiv == 5) || (minDiv == 8) || (minDiv == 9) || (minDiv == 10) || (minDiv == 11)));
-        if (DEspecial1 == 1) setLED(33, 35, ((minDiv == 5) || (minDiv == 8) || (minDiv == 10) || (minDiv == 11)));
+        if (DEspecial1 == 0) setLED(39, 41, ((minDiv == 5) || (minDiv == 8) || (minDiv == 9) || (minDiv == 10) || (minDiv == 11)));
+        if (DEspecial1 == 1) setLED(39, 41, ((minDiv == 5) || (minDiv == 8) || (minDiv == 10) || (minDiv == 11)));
         // Halb:
         setLED(51, 54, ((minDiv == 5) || (minDiv == 6) || (minDiv == 7)));
         // Eck-LEDs: 1 pro Minute
@@ -2144,31 +2142,31 @@ void showCurrentTime() {
         // Uhr:
         setLED(107, 109, (iMinute < 5));
         // Ein:
-        setLEDHour(55, 57, (xHour == 1));
+        setLEDHour(57, 59, (xHour == 1));
         // EinS: (S in EINS) (just used if not point 1 o'clock)
-        setLEDHour(58, 58, ((xHour == 1) && (iMinute > 4)));
+        setLEDHour(60, 60, ((xHour == 1) && (iMinute > 4)));
         // Zwei:
-        setLEDHour(62, 65, (xHour == 2));
+        setLEDHour(56, 58, (xHour == 2));
         // Drei:
-        setLEDHour(73, 76, (xHour == 3));
+        setLEDHour(72, 75, (xHour == 3));
         // Vier:
-        setLEDHour(66, 69, (xHour == 4));
+        setLEDHour(84, 87, (xHour == 4));
         // Fuenf:
-        setLEDHour(44, 47, (xHour == 5));
+        setLEDHour(66, 69, (xHour == 5));
         // Sechs:
-        setLEDHour(77, 81, (xHour == 6));
+        setLEDHour(100, 104, (xHour == 6));
         // Sieben:
-        setLEDHour(93, 98, (xHour == 7));
+        setLEDHour(60, 65, (xHour == 7));
         // Acht:
-        setLEDHour(84, 87, (xHour == 8));
+        setLEDHour(94, 97, (xHour == 8));
         // Neun:
-        setLEDHour(102, 105, (xHour == 9));
+        setLEDHour(80, 83, (xHour == 9));
         // Zehn: (Stunden)
-        setLEDHour(99, 102, (xHour == 10));
+        setLEDHour(90, 93, (xHour == 10));
         // Elf:
-        setLEDHour(47, 49, (xHour == 11));
+        setLEDHour(77, 79, (xHour == 11));
         // Zwoelf:
-        setLEDHour(88, 92, (xHour == 12));
+        setLEDHour(45, 49, (xHour == 12));
         break;
       }
   }
@@ -2477,7 +2475,7 @@ void DisplayTest() {
 void SetWLAN() {
   if (usesetwlan) {
     switch (switchLangWeb) {
-      case 0:
+      case GERMAN:
         {  // DE:
           Serial.println("Show SET WLAN...");
           setLED(6, 6, 1);      // S
@@ -2493,7 +2491,7 @@ void SetWLAN() {
           setLED(113, 113, 1);  // Corner 4
           break;
         }
-      case 1:
+      case ENGLISH:
         {  // EN:
           Serial.println("Show WIFI...");
           setLED(31, 31, 1);    // W
@@ -2506,16 +2504,16 @@ void SetWLAN() {
           setLED(113, 113, 1);  // Corner 4
           break;
         }
-      case 2:
-        {  // DE altes format // TODO
+      case GERMAN_OLD_LAYOUT:
+        {
           Serial.println("Show SET WLAN...");
           setLED(6, 6, 1);      // S
           setLED(12, 12, 1);    // E
           setLED(24, 24, 1);    // T
-          setLED(63, 63, 1);    // W
-          setLED(83, 83, 1);    // L
-          setLED(84, 84, 1);    // A
-          setLED(93, 93, 1);    // N
+          setLED(56, 56, 1);    // W
+          setLED(78, 78, 1);    // L
+          setLED(97, 97, 1);    // A
+          setLED(90, 90, 1);    // N
           setLED(110, 110, 1);  // Corner 1
           setLED(111, 111, 1);  // Corner 2
           setLED(112, 112, 1);  // Corner 3
@@ -2538,7 +2536,7 @@ void ClockRestart() {
   dunkel();
   Serial.println("Show RESET before board reset...");
   switch (switchLangWeb) {
-    case 0:  // DE:
+    case GERMAN:  // DE:
       {
         setLED(30, 31, 1);  // RE
         setLED(58, 58, 1);  // S
@@ -2546,7 +2544,7 @@ void ClockRestart() {
         setLED(87, 87, 1);  // T
         break;
       }
-    case 1:  // EN:
+    case ENGLISH:  // EN:
       {
         setLED(16, 16, 1);  // R
         setLED(30, 30, 1);  // E
@@ -2555,12 +2553,12 @@ void ClockRestart() {
         setLED(42, 42, 1);  // T
         break;
       }
-    case 2:  // DE altes Format //TODO
+    case GERMAN_OLD_LAYOUT:
       {
         setLED(30, 31, 1);  // RE
-        setLED(58, 58, 1);  // S
-        setLED(64, 64, 1);  // E
-        setLED(87, 87, 1);  // T
+        setLED(60, 60, 1);  // S
+        setLED(81, 81, 1);  // E
+        setLED(94, 94, 1);  // T
         break;
       }
   }
@@ -2583,7 +2581,7 @@ void ClockWifiReset() {
   client.stop();
   dunkel();
   switch (switchLangWeb) {
-    case 0:
+    case GERMAN:
       {  // DE:
         Serial.println("Show SET WLAN...");
         setLED(6, 6, 1);      // S
@@ -2599,7 +2597,7 @@ void ClockWifiReset() {
         setLED(113, 113, 1);  // Corner 4
         break;
       }
-    case 1:
+    case ENGLISH:
       {  // EN:
         Serial.println("Show WIFI...");
         setLED(31, 31, 1);    // W
@@ -2612,20 +2610,20 @@ void ClockWifiReset() {
         setLED(113, 113, 1);  // Corner 4
         break;
       }
-    case 2:
-      {  // DE altes format TODO
-        Serial.println("Show SET WLAN...");
-        setLED(6, 6, 1);      // S
-        setLED(12, 12, 1);    // E
-        setLED(24, 24, 1);    // T
-        setLED(63, 63, 1);    // W
-        setLED(83, 83, 1);    // L
-        setLED(84, 84, 1);    // A
-        setLED(93, 93, 1);    // N
-        setLED(110, 110, 1);  // Corner 1
-        setLED(111, 111, 1);  // Corner 2
-        setLED(112, 112, 1);  // Corner 3
-        setLED(113, 113, 1);  // Corner 4
+    case GERMAN_OLD_LAYOUT:
+      {
+		Serial.println("Show SET WLAN...");
+		setLED(6, 6, 1);      // S
+		setLED(12, 12, 1);    // E
+		setLED(24, 24, 1);    // T
+		setLED(56, 56, 1);    // W
+		setLED(78, 78, 1);    // L
+		setLED(97, 97, 1);    // A
+		setLED(90, 90, 1);    // N
+		setLED(110, 110, 1);  // Corner 1
+		setLED(111, 111, 1);  // Corner 2
+		setLED(112, 112, 1);  // Corner 3
+		setLED(113, 113, 1);  // Corner 4
         break;
       }
       pixels.show();
@@ -2936,7 +2934,7 @@ void update_finished() {  // Callback update success finish function
   pixels.show();
   Serial.println("Show RESET before board reset...");
   switch (switchLangWeb) {
-    case 0:  // DE:
+    case GERMAN:  // DE:
       {
         setLED(30, 31, 1);  // RE
         setLED(58, 58, 1);  // S
@@ -2944,13 +2942,21 @@ void update_finished() {  // Callback update success finish function
         setLED(87, 87, 1);  // T
         break;
       }
-    case 1:  // EN:
+    case ENGLISH:  // EN:
       {
         setLED(16, 16, 1);  // R
         setLED(30, 30, 1);  // E
         setLED(37, 37, 1);  // S
         setLED(39, 39, 1);  // E
         setLED(42, 42, 1);  // T
+        break;
+      }
+	case GERMAN_OLD_LAYOUT:
+      {
+        setLED(30, 31, 1);  // RE
+        setLED(60, 60, 1);  // S
+        setLED(81, 81, 1);  // E
+        setLED(94, 94, 1);  // T
         break;
       }
   }
@@ -2977,7 +2983,7 @@ void update_error(int err) {  // Callback update error finish function
   pixels.show();
   Serial.println("Show RESET before board reset...");
   switch (switchLangWeb) {
-    case 0:  // DE:
+    case GERMAN:  // DE:
       {
         setLED(30, 31, 1);  // RE
         setLED(58, 58, 1);  // S
@@ -2985,7 +2991,7 @@ void update_error(int err) {  // Callback update error finish function
         setLED(87, 87, 1);  // T
         break;
       }
-    case 1:  // EN:
+    case ENGLISH:  // EN:
       {
         setLED(16, 16, 1);  // R
         setLED(30, 30, 1);  // E
@@ -2994,12 +3000,12 @@ void update_error(int err) {  // Callback update error finish function
         setLED(42, 42, 1);  // T
         break;
       }
-          case 2:  // DE altes Format //Todo
+    case GERMAN_OLD_LAYOUT:
       {
         setLED(30, 31, 1);  // RE
-        setLED(58, 58, 1);  // S
-        setLED(64, 64, 1);  // E
-        setLED(87, 87, 1);  // T
+        setLED(60, 60, 1);  // S
+        setLED(81, 81, 1);  // E
+        setLED(94, 94, 1);  // T
         break;
       }
   }
