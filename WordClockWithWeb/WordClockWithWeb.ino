@@ -54,7 +54,7 @@
 // ###########################################################################################################################################
 // # Version number of the code:
 // ###########################################################################################################################################
-const char* WORD_CLOCK_VERSION = "V5.9.2";
+const char* WORD_CLOCK_VERSION = "V5.9.4";
 
 typedef enum
 {
@@ -90,6 +90,7 @@ bool LEDsON = true;                                                             
 bool RESTmanLEDsON = true;                                                           // Global flag to turn LEDs manually on or off - Used for the REST function
 bool UpdateAvailable = false;                                                        // Global flag to check for avaiable updates
 String AvailableVersion = "-";                                                       // Global string to check for avaiable updates
+bool NightModeActive = false;                                                        // Global flag to track if Night Mode is currently active - used for PING function
 
 
 // ###########################################################################################################################################
@@ -1124,6 +1125,7 @@ void checkClient() {
                 displayoff = -1;
               } else {
                 displayoff = 0;
+                NightModeActive = false;
               }
 
 
@@ -1133,6 +1135,7 @@ void checkClient() {
                 useNightLEDs = -1;
               } else {
                 useNightLEDs = 0;
+                NightModeActive = false;
               }
 
 
@@ -2283,7 +2286,7 @@ void showDCW() {
 // # Display the time:
 // ###########################################################################################################################################
 void ShowTheTime() {
-  if (iSecond == 30) {
+  if ((iMinute == 30) && (iSecond == 0)) {
     if (showDate)
       showCurrentDate();
   }
@@ -2295,13 +2298,16 @@ void ShowTheTime() {
 // ###########################################################################################################################################
 // # Handle day and night time mode:
 // ###########################################################################################################################################
+
 void DayNightMode(int displayonMin, int displayonMax) {
   if (iHour > displayonMin && iHour < displayonMax) {
     pixels.setBrightness(intensity);  // Day brightness
+    NightModeActive = false;
     ShowTheTime();
   } else {
     if (useNightLEDs == -1) {
       pixels.setBrightness(intensityNight);  // Night brightness
+      NightModeActive = true;
       ShowTheTime();
     } else {
       dunkel();
@@ -2792,7 +2798,8 @@ void PingIP() {
 
     // PING status check:
     if (PingStatusIP1 == true || PingStatusIP2 == true || PingStatusIP3 == true) {
-      pixels.setBrightness(intensity);
+      if (NightModeActive == false) pixels.setBrightness(intensity);
+      if (NightModeActive == true) pixels.setBrightness(intensityNight);
       if (RESTmanLEDsON == true) LEDsON = true;
     }
     if (PingStatusIP1 == false && PingStatusIP2 == false && PingStatusIP3 == false) {
